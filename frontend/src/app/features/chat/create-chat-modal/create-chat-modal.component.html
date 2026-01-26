@@ -1,0 +1,35 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Chat Room</h2>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="chatTitle">Chat Room Name</label>
+        <input
+          type="text"
+          id="chatTitle"
+          [(ngModel)]="chatTitle"
+          class="form-control"
+          placeholder="Enter chat room name"
+          (keyup.enter)="onCreate()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="chatType">Chat Type</label>
+        <select id="chatType" [(ngModel)]="chatType" class="form-control">
+          <option value="Group">Group</option>
+          <option value="Direct">Direct</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">Cancel</button>
+      <button class="btn btn-primary" (click)="onCreate()">Create</button>
+    </div>
+  </div>
+</div>

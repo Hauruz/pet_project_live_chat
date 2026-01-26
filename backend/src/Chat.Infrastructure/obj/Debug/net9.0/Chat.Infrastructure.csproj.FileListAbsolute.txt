@@ -1,4 +1,5 @@
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\bin\Debug\net9.0\Chat.Infrastructure.deps.json
+C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\bin\Debug\net9.0\Chat.Infrastructure.runtimeconfig.json
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\bin\Debug\net9.0\Chat.Infrastructure.dll
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\bin\Debug\net9.0\Chat.Infrastructure.pdb
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\bin\Debug\net9.0\Chat.Application.dll
@@ -15,4 +16,5 @@ C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructur
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\obj\Debug\net9.0\Chat.Infrastructure.dll
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\obj\Debug\net9.0\refint\Chat.Infrastructure.dll
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\obj\Debug\net9.0\Chat.Infrastructure.pdb
+C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\obj\Debug\net9.0\Chat.Infrastructure.genruntimeconfig.cache
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Infrastructure\obj\Debug\net9.0\ref\Chat.Infrastructure.dll

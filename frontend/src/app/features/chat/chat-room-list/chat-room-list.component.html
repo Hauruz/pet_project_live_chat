@@ -1,0 +1,36 @@
+<div class="chat-room-list">
+  <div class="list-header">
+    <h3>Chats</h3>
+    <button (click)="onCreateChatRoom()" class="btn-create">+</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading chats...
+  </div>
+
+  <div *ngIf="!loading && chatRooms.length === 0" class="no-chats">
+    No chats yet
+  </div>
+
+  <div *ngIf="!loading" class="room-list">
+    <div
+      *ngFor="let room of chatRooms"
+      (click)="onSelectChatRoom(room)"
+      class="room-item"
+      [class.active]="selectedChatRoom?.id === room.id"
+    >
+      <div class="room-content">
+        <h4>{{ getChatRoomTitle(room) }}</h4>
+        <p class="room-meta">{{ room.memberUsernames.length }} members</p>
+      </div>
+      <button
+        *ngIf="isCreator(room)"
+        (click)="onDeleteChatRoom($event, room)"
+        class="btn-delete"
+        title="Delete chat"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h1>💬 Chat Application</h1>
+    <div class="user-info">
+      <span>{{ authService.getCurrentUser()?.username }}</span>
+      <button (click)="logout()" class="btn btn-logout">Logout</button>
+    </div>
+  </div>
+
+  <div class="chat-layout">
+    <div class="chat-sidebar">
+      <app-chat-room-list
+        [chatRooms]="chatRooms"
+        [selectedChatRoom]="selectedChatRoom"
+        [loading]="loading"
+        [currentUserId]="currentUserId"
+        (selectChatRoom)="selectChatRoom($event)"
+        (createChatRoom)="onCreateChatRoom()"
+        (deleteChatRoom)="onDeleteChatRoom($event)"
+      ></app-chat-room-list>
+    </div>
+
+    <div class="chat-main">
+      <app-chat-room
+        *ngIf="selectedChatRoom"
+        [chatRoom]="selectedChatRoom"
+      ></app-chat-room>
+      <div *ngIf="!selectedChatRoom" class="no-chat-selected">
+        <p>Select a chat room to start messaging</p>
+      </div>
+    </div>
+  </div>
+
+  <app-create-chat-modal
+    *ngIf="showCreateModal"
+    (close)="onCloseCreateModal()"
+    (create)="onCreateChat($event)"
+  ></app-create-chat-modal>
+</div>
