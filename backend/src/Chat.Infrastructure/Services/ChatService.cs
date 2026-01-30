@@ -26,13 +26,11 @@ public class ChatService : IChatService
             CreatedAt = DateTime.UtcNow
         };
 
-        // Add creator as member
         var members = new List<ChatMember>
         {
             new ChatMember { ChatRoomId = chatRoom.Id, UserId = createdBy }
         };
 
-        // Add other members
         foreach (var memberId in request.MemberIds)
         {
             if (memberId != createdBy)
@@ -46,7 +44,6 @@ public class ChatService : IChatService
         _dbContext.ChatRooms.Add(chatRoom);
         await _dbContext.SaveChangesAsync();
 
-        // Reload with includes
         var savedRoom = await _dbContext.ChatRooms
             .Include(cr => cr.Members)
             .ThenInclude(m => m.User)
@@ -94,7 +91,6 @@ public class ChatService : IChatService
 
     public async Task<MessageDto> SendMessageAsync(Guid chatRoomId, Guid senderId, string text)
     {
-        // Verify chat room exists and user is a member
         var chatRoom = await _dbContext.ChatRooms
             .Include(cr => cr.Members)
             .FirstOrDefaultAsync(cr => cr.Id == chatRoomId);
@@ -117,7 +113,6 @@ public class ChatService : IChatService
         _dbContext.Messages.Add(message);
         await _dbContext.SaveChangesAsync();
 
-        // Reload message with sender info
         var savedMessage = await _dbContext.Messages
             .Include(m => m.Sender)
             .FirstOrDefaultAsync(m => m.Id == message.Id);
@@ -184,16 +179,35 @@ public class ChatService : IChatService
         if (user == null)
             throw new InvalidOperationException("User not found");
 
-        // Check if user is already in the chat room
         if (chatRoom.Members.Any(m => m.UserId == user.id))
             throw new InvalidOperationException("User is already a member of this chat room");
 
-        // Add user to chat room
         var chatMember = new ChatMember { ChatRoomId = chatRoomId, UserId = user.id };
         chatRoom.Members.Add(chatMember);
         await _dbContext.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<string?> RemoveUserFromChatRoomAsync(Guid chatRoomId, Guid userId)
+    {
+        var chatRoom = await _dbContext.ChatRooms
+            .Include(cr => cr.Members)
+            .ThenInclude(m => m.User)
+            .FirstOrDefaultAsync(cr => cr.Id == chatRoomId);
+
+        if (chatRoom == null)
+            return null;
+
+        var member = chatRoom.Members.FirstOrDefault(m => m.UserId == userId);
+        if (member == null)
+            return null;
+
+        var username = member.User?.Username;
+        _dbContext.ChatMembers.Remove(member);
+        await _dbContext.SaveChangesAsync();
+
+        return username;
     }
 
     private ChatRoomDto MapToChatRoomDto(ChatRoom chatRoom)

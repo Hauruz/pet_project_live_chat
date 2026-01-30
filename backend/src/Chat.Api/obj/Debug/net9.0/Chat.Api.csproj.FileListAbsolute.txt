@@ -144,3 +144,6 @@ C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\obj\Debug
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\obj\Debug\net9.0\Chat.Api.pdb
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\obj\Debug\net9.0\Chat.Api.genruntimeconfig.cache
 C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\obj\Debug\net9.0\ref\Chat.Api.dll
+C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\bin\Debug\net9.0\Quartz.dll
+C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\bin\Debug\net9.0\Quartz.Extensions.DependencyInjection.dll
+C:\Users\ka292\source\repos\pet_project_live_chat\backend\src\Chat.Api\bin\Debug\net9.0\Quartz.Extensions.Hosting.dll

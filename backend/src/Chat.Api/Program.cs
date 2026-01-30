@@ -10,28 +10,22 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add DbContext
 builder.Services.AddDbContext<ChatDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("ChatDb")));
 
-// Add JWT Configuration
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"]!;
 var issuer = jwtSettings["Issuer"]!;
 var audience = jwtSettings["Audience"]!;
 var expirationMinutes = int.Parse(jwtSettings["ExpirationMinutes"]!);
 
-// Register JWT Service
 builder.Services.AddSingleton<IJwtService>(sp => 
     new JwtService(secretKey, issuer, audience, expirationMinutes));
 
-// Register Auth Service
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Register Chat Service
 builder.Services.AddScoped<IChatService, ChatService>();
 
-// Configure Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,7 +45,6 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
     
-    // Configure JWT for SignalR
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -67,19 +60,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add Authorization
 builder.Services.AddAuthorization();
 
-// Add Controllers
 builder.Services.AddControllers();
 
-// Add SignalR
 builder.Services.AddSignalR(options =>
 {
     options.MaximumReceiveMessageSize = 1024 * 1024; // 1MB max message size
 });
 
-// Add CORS if needed
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -97,13 +86,11 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
-// Use Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Map SignalR Hub
 app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

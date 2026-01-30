@@ -11,4 +11,5 @@ public interface IChatService
     Task<List<MessageDto>> GetChatMessagesAsync(Guid chatRoomId, int limit = 50);
     Task<bool> DeleteChatRoomAsync(Guid chatRoomId, Guid userId);
     Task<bool> AddUserToChatRoomAsync(Guid chatRoomId, string username, Guid invitedBy);
+    Task<string?> RemoveUserFromChatRoomAsync(Guid chatRoomId, Guid userId);
 }

@@ -2,6 +2,8 @@ using Chat.Application.DTOs;
 using Chat.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Win32;
+using System.Collections.Concurrent;
 using System.Security.Claims;
 
 namespace Chat.Api.Hubs;
@@ -11,11 +13,13 @@ public class ChatHub : Hub
 {
     private readonly IChatService _chatService;
     private readonly ILogger<ChatHub> _logger;
+    private readonly UserActivityRegistry _registry;
 
-    public ChatHub(IChatService chatService, ILogger<ChatHub> logger)
+    public ChatHub(IChatService chatService, ILogger<ChatHub> logger, UserActivityRegistry registry)
     {
         _chatService = chatService;
         _logger = logger;
+        _registry = registry;
     }
 
     public override async Task OnConnectedAsync()
@@ -24,7 +28,9 @@ public class ChatHub : Hub
         var username = Context.User?.FindFirst(ClaimTypes.Name)?.Value;
         
         _logger.LogInformation($"User {username} ({userId}) connected. ConnectionId: {Context.ConnectionId}");
-        
+        _registry.Add(Context.ConnectionId, Guid.Parse(userId!));
+        _registry.Touch(Context.ConnectionId);
+
         await base.OnConnectedAsync();
     }
 
@@ -35,6 +41,9 @@ public class ChatHub : Hub
         
         _logger.LogInformation($"User {username} ({userId}) disconnected. ConnectionId: {Context.ConnectionId}");
         
+        _registry.Remove(Context.ConnectionId);
+        _registry.Touch(Context.ConnectionId);
+
         await base.OnDisconnectedAsync(exception);
     }
 
@@ -43,9 +52,14 @@ public class ChatHub : Hub
         try
         {
             var userId = GetUserId();
+
+            _registry.Touch(Context.ConnectionId);
+            _registry.JoinChat(Context.ConnectionId, chatRoomId);
+
             await Groups.AddToGroupAsync(Context.ConnectionId, $"chatroom-{chatRoomId}");
             
             _logger.LogInformation($"User {userId} joined chat room {chatRoomId}");
+            
             
             await Clients.Group($"chatroom-{chatRoomId}")
                 .SendAsync("UserJoined", new { userId = userId, message = "User joined the chat" });
@@ -62,6 +76,10 @@ public class ChatHub : Hub
         try
         {
             var userId = GetUserId();
+
+            _registry.Touch(Context.ConnectionId);
+            _registry.LeaveChat(Context.ConnectionId, chatRoomId);
+
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"chatroom-{chatRoomId}");
             
             _logger.LogInformation($"User {userId} left chat room {chatRoomId}");
@@ -86,12 +104,14 @@ public class ChatHub : Hub
                 return;
             }
 
+            _registry.Touch(Context.ConnectionId);
+
             var userId = GetUserId();
+                       
             var messageDto = await _chatService.SendMessageAsync(chatRoomId, userId, text);
 
             _logger.LogInformation($"Message sent in chat room {chatRoomId} by user {userId}");
 
-            // Send message to all clients in the chat room
             await Clients.Group($"chatroom-{chatRoomId}")
                 .SendAsync("ReceiveMessage", messageDto);
         }
@@ -106,6 +126,7 @@ public class ChatHub : Hub
     {
         try
         {
+            _registry.Touch(Context.ConnectionId);
             return await _chatService.GetChatMessagesAsync(chatRoomId, limit);
         }
         catch (Exception ex)
@@ -114,6 +135,12 @@ public class ChatHub : Hub
             await Clients.Caller.SendAsync("Error", new { message = "Failed to load chat history" });
             return new List<MessageDto>();
         }
+    }
+
+    public Task Ping()
+    {
+        _registry.Touch(Context.ConnectionId);
+        return Task.CompletedTask;
     }
 
     private Guid GetUserId()
